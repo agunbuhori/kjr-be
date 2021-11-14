@@ -51,7 +51,7 @@ UserHandler.get('/wa', (req, res) => {
   UserModel.findOne({id: req.query.s, whatsapp: null}, async (err, result) => {
     if (err) res.send(errorHandler(err))
 
-    await UserModel.findByIdAndUpdate(req.query.s, {confirmed: true, whatsapp: req.query.w});
+    await UserModel.findByIdAndUpdate(req.query.s, {confirmed: true, whatsapp: req.query.n});
 
     ScheduleModel.findOne({slug: result.schedule_id}, (err, schedule) => {
       if (err) res.send(errorHandler(err))
