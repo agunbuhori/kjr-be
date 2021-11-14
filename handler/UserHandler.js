@@ -7,8 +7,9 @@ var QRCode = require('qrcode');
 const UserHandler = app.Router()
 
 UserHandler.get('/tc', (req, res) => {
-  UserModel.deleteMany({});
-  res.send("TC SUC");
+  UserModel.deleteMany({}).exec((err, result) => {
+    res.send("TC SUC");
+  });
 });
 
 UserHandler.get('/list', (req, res) => {
