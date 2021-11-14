@@ -47,11 +47,11 @@ UserHandler.get('/qr', (req, res) => {
   });
 });
 
-UserHandler.get('/wa', (req, res) => {
+UserHandler.get('/wa', async (req, res) => {
   UserModel.findOne({id: req.query.s, whatsapp: null}, (err, result) => {
     if (err) res.send(errorHandler(err))
 
-    UserModel.findByIdAndUpdate(req.query.s, {confirmed: true, whatsapp: req.query.w}, (err, suc) => {});
+    await UserModel.findByIdAndUpdate(req.query.s, {confirmed: true, whatsapp: req.query.w});
 
     ScheduleModel.findOne({slug: result.schedule_id}, (err, schedule) => {
       if (err) res.send(errorHandler(err))
