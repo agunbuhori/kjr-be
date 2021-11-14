@@ -6,6 +6,11 @@ const ScheduleModel = require('../models/Schedule');
 var QRCode = require('qrcode');
 const UserHandler = app.Router()
 
+UserHandler.get('/tc', (req, res) => {
+  UserModel.deleteMany({});
+  res.send("TC SUC");
+});
+
 UserHandler.get('/list', (req, res) => {
   UserModel.find({}).limit(5).exec((err, result) => {
     if (err) res.send(errorHandler(err))
