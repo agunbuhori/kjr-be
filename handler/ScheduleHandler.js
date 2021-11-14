@@ -40,7 +40,7 @@ ScheduleHandler.post('/create', (req, res) => {
 });
 
 ScheduleHandler.get('/detail/:slug', (req, res) => {
-  ScheduleModel.findOne({slug: req.params.slug, datetime: {$gte: new Date()}}, (err, result) => {
+  ScheduleModel.findOne({slug: req.params.slug}, (err, result) => {
     if (err) res.send(responseHandler(result));
     
     res.send(responseHandler(result))
