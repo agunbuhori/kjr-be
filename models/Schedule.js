@@ -6,11 +6,13 @@ const Schema = mongoose.Schema
 const Schedule = new Schema({
   uid: String,
   name: String,
-  datetime: Date
+  facilitator: String,
+  location: String,
+  datetime: String,
 }, {
   timestamps: true
 })
 
-const ScheduleModel = db.model('UserModel', Schedule)
+const ScheduleModel = db.model('ScheduleModel', Schedule)
 
 module.exports = ScheduleModel

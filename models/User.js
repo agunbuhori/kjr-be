@@ -5,11 +5,26 @@ const Schema = mongoose.Schema
 
 const User = new Schema({
   uid: String,
-  name: String,
-  email: String,
-  age: Number,
-  phone: String,
-  city: String,
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  age: {
+    type: Number,
+    required: true
+  },
+  phone: {
+    type: String,
+    required: true
+  },
+  city: {
+    type: String,
+    required: true
+  },
   present: {
     type: Boolean,
     default: false
@@ -18,6 +33,7 @@ const User = new Schema({
     type: Boolean,
     default: false
   },
+  schedule_id: String
 
 }, {
   timestamps: true
