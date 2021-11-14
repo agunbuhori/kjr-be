@@ -22,7 +22,7 @@ var corsOptions = {
   }
 }
  
-app.use(cors(corsOptions))
+app.use(cors())
 
 app.use('/user', UserHandler)
 app.use('/schedule', ScheduleHandler)
