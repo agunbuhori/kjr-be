@@ -36,7 +36,7 @@ UserHandler.get('/qr', (req, res) => {
       QRCode.toDataURL(req.query.s, {type:'terminal'}, function (err, src) {
         if (err) res.send(errorHandler(err));
   
-        res.send({image: src, responseHandler(result)})
+        res.send({image: src, ...responseHandler(result)})
       });
   });
 });
