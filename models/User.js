@@ -33,6 +33,9 @@ const User = new Schema({
     type: Boolean,
     default: false
   },
+  whatsapp: {
+    type: String
+  },
   schedule_id: String
 
 }, {

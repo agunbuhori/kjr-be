@@ -33,6 +33,20 @@ UserHandler.get('/qr', (req, res) => {
   UserModel.findById(req.query.s, (err, result) => {
     if (err) res.send(errorHandler(err))
 
+      QRCode.toDataURL(req.query.s, {type:'terminal'}, function (err, src) {
+        if (err) res.send(errorHandler(err));
+  
+        res.send({image: src, responseHandler(result)})
+      });
+  });
+});
+
+UserHandler.get('/wa', (req, res) => {
+  UserModel.findOne({id: req.query.s, whatsapp: null}, (err, result) => {
+    if (err) res.send(errorHandler(err))
+
+    UserModel.findByIdAndUpdate(req.query.s, {confirmed: true, whatsapp: req.query.w}, (err, suc) => {});
+
     ScheduleModel.findOne({slug: result.schedule_id}, (err, schedule) => {
       if (err) res.send(errorHandler(err))
 
