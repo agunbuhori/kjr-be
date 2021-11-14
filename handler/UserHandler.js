@@ -47,8 +47,8 @@ UserHandler.get('/qr', (req, res) => {
   });
 });
 
-UserHandler.get('/wa', async (req, res) => {
-  UserModel.findOne({id: req.query.s, whatsapp: null}, (err, result) => {
+UserHandler.get('/wa', (req, res) => {
+  UserModel.findOne({id: req.query.s, whatsapp: null}, async (err, result) => {
     if (err) res.send(errorHandler(err))
 
     await UserModel.findByIdAndUpdate(req.query.s, {confirmed: true, whatsapp: req.query.w});
