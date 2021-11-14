@@ -2,6 +2,7 @@ const app = require('express');
 const responseHandler = require('./responseHandler');
 const errorHandler = require('./errorHandler');
 const UserModel = require('../models/User');
+const ScheduleModel = require('../models/Schedule');
 var QRCode = require('qrcode');
 const UserHandler = app.Router()
 
@@ -32,13 +33,15 @@ UserHandler.get('/qr', (req, res) => {
   UserModel.findById(req.query.s, (err, result) => {
     if (err) res.send(errorHandler(err))
 
-    QRCode.toDataURL(req.query.s, {type:'terminal'}, function (err, src) {
-      if (err) res.send(errorHandler(err));
-
-      UserModel.findByIdAndUpdate(req.query.s, {confirmed: true});
-
-      res.send({image: src, ...responseHandler(result)})
-    });
+    ScheduleModel.findOne({slug: result.schedule_id}, (err, result => {
+      if (err) res.send(errorHandler(err))
+      
+      QRCode.toDataURL(req.query.s, {type:'terminal'}, function (err, src) {
+        if (err) res.send(errorHandler(err));
+  
+        res.send({image: src, ...responseHandler(result)})
+      });
+    }))
   })
 });
 
