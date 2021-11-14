@@ -8,15 +8,14 @@ var QRCode = require('qrcode')
 require('dotenv').config()
 
 app.use(bodyParser())
-app.use(cors({
-  origin: 'http://localhost:3000'
-}))
+app.use(cors())
 
 app.get('/', (req, res) => {
   UserModel.find({}).exec((err, result) => {
+    if (err) res.send("Err");
+
     res.send(result)
   });
-  // res.send("Http server works")
 })
 
 app.get('/tc', (req, res) => {
