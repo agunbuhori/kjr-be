@@ -6,9 +6,14 @@ const Schema = mongoose.Schema
 const Schedule = new Schema({
   uid: String,
   name: String,
+  slug: {
+    type: String,
+    unique: true
+  },
   facilitator: String,
   location: String,
   datetime: String,
+  maps: String
 }, {
   timestamps: true
 })
