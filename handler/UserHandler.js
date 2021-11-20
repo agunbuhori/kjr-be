@@ -71,11 +71,11 @@ UserHandler.get('/qr', corsMiddleware, (req, res) => {
           from: 'support@kampustsl.com',
           to: result.email,
           subject: `Bukti Pendaftaran Kajian Rutin`,
-          html: `<img src="${src}"/>`,
-          text: `
+          html: `
 بسم الله
 Ahlan ${result.name}
 Berikut QR Code dan bukti pendaftaran
+<img src="${src}"/>
 Tempat :
 Tanggal :
 
