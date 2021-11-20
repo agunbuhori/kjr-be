@@ -8,7 +8,9 @@ const UserHandler = app.Router()
 const cors = require('cors')
 const nodemailer = require('nodemailer')
 const corsOptions = require('../corsOptions')
-const corsMiddleware = cors(corsOptions)
+const corsMiddleware = cors()
+
+UserHandler.use(corsMiddleware)
 
 function toTitleCase(str) {
   if (!str) return ''
@@ -30,7 +32,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-UserHandler.get('/list', corsMiddleware, (req, res) => {
+UserHandler.get('/list', (req, res) => {
   UserModel.find({})
     .limit(5)
     .exec((err, result) => {
@@ -40,7 +42,7 @@ UserHandler.get('/list', corsMiddleware, (req, res) => {
     })
 })
 
-UserHandler.post('/register', cors(), (req, res) => {
+UserHandler.post('/register', (req, res) => {
   UserModel.find({email: req.body.email, schedule_id: req.body.schedule_id}, (err, result) => {
     if (result.length === 0) {
       const user = new UserModel({ ...req.body })
@@ -56,7 +58,7 @@ UserHandler.post('/register', cors(), (req, res) => {
 
 })
 
-UserHandler.get('/detail/:id', corsMiddleware, (req, res) => {
+UserHandler.get('/detail/:id', (req, res) => {
   UserModel.findById(req.params.id, (err, result) => {
     if (err) res.send(errorHandler(err))
 
@@ -64,7 +66,7 @@ UserHandler.get('/detail/:id', corsMiddleware, (req, res) => {
   })
 })
 
-UserHandler.get('/scan/:id', corsMiddleware, (req, res) => {
+UserHandler.get('/scan/:id', (req, res) => {
   UserModel.findById(req.params.id, async (err, result) => {
     if (err) res.send(errorHandler(err))
 
@@ -74,7 +76,7 @@ UserHandler.get('/scan/:id', corsMiddleware, (req, res) => {
   })
 })
 
-UserHandler.get('/qr', corsMiddleware, (req, res) => {
+UserHandler.get('/qr', (req, res) => {
   UserModel.findById(req.query.s, (err, result) => {
     if (err) res.send(errorHandler(err))
 
