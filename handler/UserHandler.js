@@ -94,7 +94,7 @@ UserHandler.get('/qr', corsMiddleware, (req, res) => {
       ScheduleModel.findOne({ slug: result.schedule_id }, (err, schedule) => {
         if (err) res.send(errorHandler(err))
 
-        if (! result.confirmed) {
+        if (! result.mail_confirmed) {
           transporter.sendMail(
             {
               from: 'support@kampustsl.com',
