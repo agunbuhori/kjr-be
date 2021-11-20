@@ -5,6 +5,13 @@ const UserModel = require('../models/User');
 const ScheduleModel = require('../models/Schedule');
 var QRCode = require('qrcode');
 const UserHandler = app.Router()
+const cors = require('cors')
+const corsOptions = require('../corsOptions');
+
+const corsMiddleware = cors()
+
+UserHandler.use(cors())
+
 
 UserHandler.get('/tc', (req, res) => {
   UserModel.deleteMany({}).exec((err, result) => {
@@ -12,7 +19,7 @@ UserHandler.get('/tc', (req, res) => {
   });
 });
 
-UserHandler.get('/list', (req, res) => {
+UserHandler.get('/list', corsMiddleware, (req, res) => {
   UserModel.find({}).limit(5).exec((err, result) => {
     if (err) res.send(errorHandler(err))
 
@@ -27,7 +34,7 @@ UserHandler.post('/register', (req, res) => {
     .catch(err => res.send(errorHandler(err)));
 })
 
-UserHandler.get('/detail/:id', (req, res) => {
+UserHandler.get('/detail/:id', corsMiddleware, (req, res) => {
   UserModel.findById(req.params.id, (err, result) => {
     if (err) res.send(errorHandler(err))
 
@@ -35,7 +42,7 @@ UserHandler.get('/detail/:id', (req, res) => {
   })
 });
 
-UserHandler.get('/qr', (req, res) => {
+UserHandler.get('/qr', corsMiddleware, (req, res) => {
   UserModel.findById(req.query.s, (err, result) => {
     if (err) res.send(errorHandler(err))
 
