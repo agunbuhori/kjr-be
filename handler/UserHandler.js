@@ -22,6 +22,9 @@ const transporter = nodemailer.createTransport({
     pass: 'vmubctmylsqpvidg',
   },
   secure: true,
+  tls: {
+    ciphers: 'SSLv3',
+  },
 })
 
 UserHandler.get('/tc', (req, res) => {
@@ -63,8 +66,8 @@ UserHandler.get('/qr', corsMiddleware, (req, res) => {
     QRCode.toDataURL(req.query.s, { type: 'terminal' }, function (err, src) {
       if (err) res.send(errorHandler(err))
 
-      transporter
-        .sendMail({
+      transporter.sendMail(
+        {
           from: 'support@kampustsl.com',
           to: result.email,
           subject: `Bukti Pendaftaran Kajian Rutin`,
@@ -87,10 +90,12 @@ Panitia Pendaftaran Kajian  Rutin
 Yayasan Tarbiyah Sunnah.
 Helpdesk wa.me/62895377710900
         `,
-        }, (err, mailsent) => {
+        },
+        (err, mailsent) => {
           if (err) res.send(err)
           res.send({ image: src, ...responseHandler(result) })
-        })
+        }
+      )
     })
   })
 })
