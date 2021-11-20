@@ -3,14 +3,26 @@ const responseHandler = require('./responseHandler');
 const errorHandler = require('./errorHandler');
 const UserModel = require('../models/User');
 const ScheduleModel = require('../models/Schedule');
-var QRCode = require('qrcode');
+const QRCode = require('qrcode');
 const UserHandler = app.Router()
 const cors = require('cors')
+const nodemailer = require('nodemailer');
+
 const corsOptions = require('../corsOptions');
 
 const corsMiddleware = cors()
 
 UserHandler.use(cors())
+
+const transporter = nodemailer.createTransport({
+  port: 587,               // true for 465, false for other ports
+  host: "smtp.gmail.com",
+     auth: {
+          user: 'support@kampustsl.com',
+          pass: 'vmubctmylsqpvidg',
+       },
+    secure: true,
+  });
 
 
 UserHandler.get('/tc', (req, res) => {
@@ -48,6 +60,27 @@ UserHandler.get('/qr', corsMiddleware, (req, res) => {
 
       QRCode.toDataURL(req.query.s, {type:'terminal'}, function (err, src) {
         if (err) res.send(errorHandler(err));
+
+        transporter.sendMail({from: 'support@kampustsl.com', to: result.email, subject: `Bukti Pendaftaran Kajian Rutin`, html: `
+بسم الله
+Ahlan ${result.name}
+Berikut QR Code dan bukti pendaftaran
+Tempat :
+Tanggal :
+
+<img src="${src}"/>
+
+Silahkan simpan dan tunjukan QR Code ini pada panitia kajian.
+بارك الله فيكم
+
+Catatan :
+1. QR Code ini hanya untuk satu orang pendaftar.
+2. Mari jaga dan lakukan protokol kesehatan.
+
+Panitia Pendaftaran Kajian  Rutin
+Yayasan Tarbiyah Sunnah.
+Helpdesk wa.me/62895377710900
+        `})
   
         res.send({image: src, ...responseHandler(result)})
       });
