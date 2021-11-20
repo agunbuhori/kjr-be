@@ -40,7 +40,7 @@ UserHandler.get('/list', corsMiddleware, (req, res) => {
     })
 })
 
-UserHandler.post('/register', corsMiddleware, (req, res) => {
+UserHandler.post('/register', (req, res) => {
   UserModel.find({email: req.body.email, schedule_id: req.body.schedule_id}, (err, result) => {
     if (result.length === 0) {
       const user = new UserModel({ ...req.body })
