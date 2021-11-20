@@ -30,10 +30,16 @@ const User = new Schema({
     type: Boolean,
     default: false
   },
-  confirmed: {
+  mail_confirmed: {
     type: Boolean,
     default: false
   },
+  
+  wa_confirmed: {
+    type: Boolean,
+    default: false
+  },
+
   
   whatsapp: {
     type: String

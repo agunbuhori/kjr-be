@@ -51,11 +51,19 @@ UserHandler.get('/list', corsMiddleware, (req, res) => {
 })
 
 UserHandler.post('/register', (req, res) => {
-  const user = new UserModel({ ...req.body })
-  user
-    .save()
-    .then((result) => res.send(responseHandler(result)))
-    .catch((err) => res.send(errorHandler(err)))
+  UserModel.find({email: req.body.email, schedule_id: req.body.schedule_id}, (err, result) => {
+    if (result.length === 0) {
+      const user = new UserModel({ ...req.body })
+      user
+        .save()
+        .then((result) => res.send(responseHandler(result)))
+        .catch((err) => res.send(errorHandler(err)))
+    } else {
+      res.send(errorHandler("twice registration"))
+
+    }
+  })
+
 })
 
 UserHandler.get('/detail/:id', corsMiddleware, (req, res) => {
@@ -105,6 +113,7 @@ UserHandler.get('/qr', corsMiddleware, (req, res) => {
   Berikut QR Code dan bukti pendaftaran : <br/>
   Tempat : ${schedule.location}<br/>
   Tanggal : ${schedule.datetime}<br/>
+  Jumlah Tiket : ${result.ticket}<br/>
   Silahkan simpan dan tunjukan QR Code ini pada panitia kajian.<br/>
   بارك الله فيكم
   </p>
@@ -123,7 +132,7 @@ UserHandler.get('/qr', corsMiddleware, (req, res) => {
             (err, mailsent) => {
               if (err) res.send(err)
 
-              UserModel.findByIdAndUpdate(result._id, {confirmed: true}).exec()
+              UserModel.findByIdAndUpdate(result._id, {mail_confirmed: true}).exec()
             }
           )
         }
@@ -137,7 +146,7 @@ UserHandler.get('/wa', (req, res) => {
   UserModel.findOne({ id: req.query.s, whatsapp: null }, async (err, result) => {
     if (err) res.send(errorHandler(err))
 
-    await UserModel.findByIdAndUpdate(req.query.s, { confirmed: true, whatsapp: req.query.n })
+    await UserModel.findByIdAndUpdate(req.query.s, { wa_confirmed: true, whatsapp: req.query.n })
 
     ScheduleModel.findOne({ slug: result.schedule_id }, (err, schedule) => {
       if (err) res.send(errorHandler(err))
@@ -148,14 +157,6 @@ UserHandler.get('/wa', (req, res) => {
         res.send({ image: src, ...responseHandler(result), schedule: schedule })
       })
     })
-  })
-})
-
-UserHandler.post('/scan', (req, res) => {
-  UserModel.findByIdAndUpdate(req.body.id, { present: true }, (err, result) => {
-    if (err) res.send(errorHandler(err))
-
-    res.send(result)
   })
 })
 
