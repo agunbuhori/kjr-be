@@ -28,7 +28,6 @@ function makeid(length) {
   return result
 }
 
-ScheduleHandler.use(cors(corsOptions));
 
 ScheduleHandler.post('/create', (req, res) => {
   const times = new Date(req.body.datetime)

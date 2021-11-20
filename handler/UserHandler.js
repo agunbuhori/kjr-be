@@ -10,8 +10,6 @@ const nodemailer = require('nodemailer')
 const corsOptions = require('../corsOptions')
 const corsMiddleware = cors(corsOptions)
 
-UserHandler.use(corsMiddleware)
-
 function toTitleCase(str) {
   if (!str) return ''
   return str.replace(/\w\S*/g, function (txt) {
