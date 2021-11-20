@@ -14,6 +14,13 @@ const corsMiddleware = cors()
 
 UserHandler.use(cors())
 
+function toTitleCase(str) {
+  if (!str) return ''
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  })
+}
+
 const transporter = nodemailer.createTransport({
   port: 465, // true for 465, false for other ports
   host: 'smtp.gmail.com',
@@ -59,6 +66,16 @@ UserHandler.get('/detail/:id', corsMiddleware, (req, res) => {
   })
 })
 
+UserHandler.get('/scan/:id', corsMiddleware, (req, res) => {
+  UserModel.findById(req.params.id, async (err, result) => {
+    if (err) res.send(errorHandler(err))
+
+    await UserModel.findOneAndUpdate(result._id, { present: true }).exec()
+
+    res.send(responseHandler(result))
+  })
+})
+
 UserHandler.get('/qr', corsMiddleware, (req, res) => {
   UserModel.findById(req.query.s, (err, result) => {
     if (err) res.send(errorHandler(err))
@@ -66,36 +83,52 @@ UserHandler.get('/qr', corsMiddleware, (req, res) => {
     QRCode.toDataURL(req.query.s, { type: 'terminal' }, function (err, src) {
       if (err) res.send(errorHandler(err))
 
-      transporter.sendMail(
-        {
-          from: 'support@kampustsl.com',
-          to: result.email,
-          subject: `Bukti Pendaftaran Kajian Rutin`,
-          html: `
-بسم الله
-Ahlan ${result.name}
-Berikut QR Code dan bukti pendaftaran
-<img src="${src}"/>
-Tempat :
-Tanggal :
+      ScheduleModel.findOne({ slug: result.schedule_id }, (err, schedule) => {
+        if (err) res.send(errorHandler(err))
 
-Silahkan simpan dan tunjukan QR Code ini pada panitia kajian.
-بارك الله فيكم
+        if (! result.confirmed) {
+          transporter.sendMail(
+            {
+              from: 'support@kampustsl.com',
+              to: result.email,
+              subject: `Bukti Pendaftaran Kajian Rutin ${schedule.name}`,
+              attachments: [
+                {
+                  filename: 'qrcode.png',
+                  path: src,
+                },
+              ],
+              html: `
+  بسم الله
+  <p>
+  Ahlan <strong>${toTitleCase(result.name)}!</strong><br/>
+  Berikut QR Code dan bukti pendaftaran : <br/>
+  Tempat : ${schedule.location}<br/>
+  Tanggal : ${schedule.datetime}<br/>
+  Silahkan simpan dan tunjukan QR Code ini pada panitia kajian.<br/>
+  بارك الله فيكم
+  </p>
+  <p>
+  <strong>Catatan :</strong><br/>
+  1. QR Code ini hanya untuk satu orang pendaftar.<br/>
+  2. Mari jaga dan lakukan protokol kesehatan.<br/>
+  </p>
+  <p>
+  Panitia Pendaftaran Kajian  Rutin<br/>
+  Yayasan Tarbiyah Sunnah.<br/>
+  Helpdesk wa.me/62895377710900
+  </p>
+          `,
+            },
+            (err, mailsent) => {
+              if (err) res.send(err)
 
-Catatan :
-1. QR Code ini hanya untuk satu orang pendaftar.
-2. Mari jaga dan lakukan protokol kesehatan.
-
-Panitia Pendaftaran Kajian  Rutin
-Yayasan Tarbiyah Sunnah.
-Helpdesk wa.me/62895377710900
-        `,
-        },
-        (err, mailsent) => {
-          if (err) res.send(err)
-          res.send({ image: src, ...responseHandler(result) })
+              UserModel.findByIdAndUpdate(result._id, {confirmed: true}).exec()
+            }
+          )
         }
-      )
+      })
+      res.send({ image: src, ...responseHandler(result) })
     })
   })
 })

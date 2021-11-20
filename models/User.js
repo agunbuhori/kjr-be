@@ -17,10 +17,11 @@ const User = new Schema({
     type: Number,
     required: true
   },
-  phone: {
+  gender: {
     type: String,
     required: true
   },
+
   city: {
     type: String,
     required: true
@@ -33,10 +34,15 @@ const User = new Schema({
     type: Boolean,
     default: false
   },
+  
   whatsapp: {
     type: String
   },
-  schedule_id: String
+  ticket: Number,
+  schedule_id: String,
+  name_2: String,
+  gender_2: String,
+  age_2: Number,
 
 }, {
   timestamps: true
