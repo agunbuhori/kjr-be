@@ -113,7 +113,6 @@ UserHandler.get('/qr', corsMiddleware, (req, res) => {
   Berikut QR Code dan bukti pendaftaran : <br/>
   Tempat : ${schedule.location}<br/>
   Tanggal : ${schedule.datetime}<br/>
-  Jumlah Tiket : ${result.ticket}<br/>
   Silahkan simpan dan tunjukan QR Code ini pada panitia kajian.<br/>
   بارك الله فيكم
   </p>
