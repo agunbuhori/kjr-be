@@ -7,12 +7,10 @@ const QRCode = require('qrcode')
 const UserHandler = app.Router()
 const cors = require('cors')
 const nodemailer = require('nodemailer')
-
 const corsOptions = require('../corsOptions')
+const corsMiddleware = cors(corsOptions)
 
-const corsMiddleware = cors()
-
-UserHandler.use(cors())
+UserHandler.use(corsMiddleware)
 
 function toTitleCase(str) {
   if (!str) return ''
@@ -34,12 +32,6 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-UserHandler.get('/tc', (req, res) => {
-  UserModel.deleteMany({}).exec((err, result) => {
-    res.send('TC SUC')
-  })
-})
-
 UserHandler.get('/list', corsMiddleware, (req, res) => {
   UserModel.find({})
     .limit(5)
@@ -50,7 +42,7 @@ UserHandler.get('/list', corsMiddleware, (req, res) => {
     })
 })
 
-UserHandler.post('/register', (req, res) => {
+UserHandler.post('/register', corsMiddleware, (req, res) => {
   UserModel.find({email: req.body.email, schedule_id: req.body.schedule_id}, (err, result) => {
     if (result.length === 0) {
       const user = new UserModel({ ...req.body })

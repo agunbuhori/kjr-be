@@ -4,6 +4,7 @@ const errorHandler = require('./errorHandler')
 const ScheduleModel = require('../models/Schedule')
 const ScheduleHandler = app.Router()
 const cors = require('cors')
+const corsOptions = require('../corsOptions')
 
 function formatDate(times) {
   const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
@@ -27,7 +28,7 @@ function makeid(length) {
   return result
 }
 
-ScheduleHandler.use(cors());
+ScheduleHandler.use(cors(corsOptions));
 
 ScheduleHandler.post('/create', (req, res) => {
   const times = new Date(req.body.datetime)
