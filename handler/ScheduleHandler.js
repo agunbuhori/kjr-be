@@ -6,6 +6,8 @@ const ScheduleHandler = app.Router()
 const cors = require('cors')
 const corsOptions = require('../corsOptions')
 
+ScheduleHandler.use(cors(corsOptions))
+
 function formatDate(times) {
   const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
   const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
@@ -27,7 +29,6 @@ function makeid(length) {
   }
   return result
 }
-
 
 ScheduleHandler.post('/create', (req, res) => {
   const times = new Date(req.body.datetime)
