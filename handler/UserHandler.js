@@ -80,9 +80,11 @@ Catatan :
 Panitia Pendaftaran Kajian  Rutin
 Yayasan Tarbiyah Sunnah.
 Helpdesk wa.me/62895377710900
-        `})
+        `}).then((err, mailsent) => {
+
+          res.send({image: src, ...responseHandler(result)})
+        })
   
-        res.send({image: src, ...responseHandler(result)})
       });
   });
 });
