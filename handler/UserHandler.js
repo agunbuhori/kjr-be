@@ -15,7 +15,7 @@ const corsMiddleware = cors()
 UserHandler.use(cors())
 
 const transporter = nodemailer.createTransport({
-  port: 587, // true for 465, false for other ports
+  port: 465, // true for 465, false for other ports
   host: 'smtp.gmail.com',
   auth: {
     user: 'support@kampustsl.com',
