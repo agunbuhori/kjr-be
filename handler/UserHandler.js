@@ -107,7 +107,7 @@ UserHandler.get('/:id', (req, res) => {
   User.findById(req.params.id).then(async (user) => {
     const qrcode = await getQR(user._id.toString())
     const schedule = await getSchedule(user.schedule_id)
-    let other = await User.findOne({email: user.email, schedule_id: user.schedule_id, name: {$ne: user.name}}).exec()
+    let other = await User.findOne({email: user.email, schedule_id: user.schedule_id, code: {$ne: user.code}}).exec()
 
     const attachments = [
       {
