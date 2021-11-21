@@ -21,21 +21,23 @@ UserHandler.get('/tc', (req, res) => {
 })
 
 UserHandler.post('/register', async (req, res) => {
-  const check = await User.find({schedule_id: req.body.schedule_id}).exec()
+  const check = await User.find({schedule_id: req.body.schedule_id, email: req.body.email}).exec()
 
   if (check.length === 0) {
-    const newUser = new User({...req.body, code: makeid(5, true), name: toTitleCase(req.body.name)})
+    const newUser = new User({...req.body, code: makeid(5), name: toTitleCase(req.body.name)})
     const newUserSave = await newUser.save()
 
     if (newUserSave && req.body.name_2 && req.body.age_2 && req.body.gender_2) {
       const {name_2, age_2, gender_2} = req.body
-      const otherUser = new User({...req.body, code: makeid(5, true), name: toTitleCase(req.body.name_2), age: age_2, gender: gender_2})
+      const otherUser = new User({...req.body, code: makeid(5), name: toTitleCase(name_2), age: age_2, gender: gender_2})
       const otherUserSave = await otherUser.save()
 
       res.send(responseHandler({...newUserSave.toObject(), other: otherUserSave.toObject()}))
     }
 
     res.send(responseHandler(newUserSave))
+  } else {
+    res.send(errorHandler("Antum sudah melakukan registrasi"))
   }
 })
 
