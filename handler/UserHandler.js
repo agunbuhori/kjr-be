@@ -61,8 +61,8 @@ UserHandler.get('/:id', (req, res) => {
     const qrcode = await getQR(user._id.toString())
     const schedule = await getSchedule(user.schedule_id)
     let other = await User.findOne({email: user.email, schedule_id: user.schedule_id, name: {$ne: user.name}}).exec()
-
-    other = {...other.toObject(), qrcode: await getQR(other._id.toString())}
+    if (other)
+      other = {...other.toObject(), qrcode: await getQR(other._id.toString())}
     res.send(responseHandler({...user.toObject(), qrcode, schedule, other}))
   }).catch(err => {
     res.status(404).send(errorHandler(err))
