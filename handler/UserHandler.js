@@ -1,171 +1,71 @@
 const app = require('express')
-const responseHandler = require('./responseHandler')
-const errorHandler = require('./errorHandler')
-const UserModel = require('../models/User')
-const ScheduleModel = require('../models/Schedule')
-const QRCode = require('qrcode')
 const UserHandler = app.Router()
 const cors = require('cors')
-const nodemailer = require('nodemailer')
 const corsOptions = require('../corsOptions')
-const corsMiddleware = cors(corsOptions)
-const jwt = require('jsonwebtoken')
+const User = require('../models/User')
+const Schedule = require('../models/Schedule')
+const { makeid } = require('../helpers')
+const responseHandler = require('./responseHandler')
+const errorHandler = require('./errorHandler')
+const QRCode = require('qrcode')
 
-function toTitleCase(str) {
-  if (!str) return ''
-  return str.replace(/\w\S*/g, function (txt) {
-    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-  })
-}
+UserHandler.use(cors(corsOptions))
 
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
-
-  if (token == null) return res.sendStatus(401)
-
-  jwt.verify(token, 'LoremIpsumDolorSitAmet', (err, result) => {
-    console.log(err)
-
-    if (err) return res.sendStatus(403)
-
-    req.token = result
-
-    next()
-  })
-}
-
-const transporter = nodemailer.createTransport({
-  port: 465, // true for 465, false for other ports
-  host: 'smtp.gmail.com',
-  auth: {
-    user: 'support@kampustsl.com',
-    pass: 'vmubctmylsqpvidg',
-  },
-  secure: true,
-  tls: {
-    ciphers: 'SSLv3',
-  },
+UserHandler.get('/list', (req, res) => {
+  User.find({}, (err, result) => res.send(responseHandler(result)))
 })
 
-UserHandler.use(cors())
-
-UserHandler.get('/list', corsMiddleware, (req, res) => {
-  UserModel.find({})
-    .limit(5)
-    .exec((err, result) => {
-      if (err) res.send(errorHandler(err))
-
-      res.send(responseHandler(result))
-    })
+UserHandler.get('/tc', (req, res) => {
+  User.deleteMany({}, (err, result) => res.send(responseHandler(result)))
 })
 
-UserHandler.post('/register', authenticateToken, corsMiddleware, (req, res) => {
-  UserModel.find({email: req.body.email, schedule_id: req.body.schedule_id}, (err, result) => {
-    if (result.length === 0) {
-      const user = new UserModel({ ...req.body })
-      user
-        .save()
-        .then((result) => res.send(responseHandler(result)))
-        .catch((err) => res.send(errorHandler(err)))
-    } else {
-      res.send(errorHandler("twice registration"))
+UserHandler.post('/register', async (req, res) => {
+  const check = await User.find({schedule_id: req.body.schedule_id}).exec()
 
+  if (check.length === 0) {
+    const newUser = new User({...req.body, code: makeid(5, true)})
+    const newUserSave = await newUser.save()
+
+    if (newUserSave && req.body.name_2 && req.body.age_2 && req.body.gender_2) {
+      const {name_2, age_2, gender_2} = req.body
+      const otherUser = new User({...req.body, code: makeid(5, true), name: name_2, age: age_2, gender: gender_2})
+      const otherUserSave = await otherUser.save()
+
+      res.send(responseHandler({...newUserSave.toObject(), other: otherUserSave.toObject()}))
     }
-  })
 
+    res.send(responseHandler(newUserSave))
+  }
 })
 
-UserHandler.get('/detail/:id', corsMiddleware, (req, res) => {
-  UserModel.findById(req.params.id, (err, result) => {
-    if (err) res.send(errorHandler(err))
+function getQR(string) {
+  return new Promise((resolve, reject) => {
+    QRCode.toDataURL(string, {type: 'terminal'}, (err, src) => {
+      if (err) reject(err)
+      resolve(src)
+    })
+  });
+}
 
-    res.send(responseHandler(result))
-  })
-})
-
-UserHandler.get('/scan/:id', corsMiddleware, (req, res) => {
-  UserModel.findById(req.params.id, async (err, result) => {
-    if (err) res.send(errorHandler(err))
-
-    await UserModel.findOneAndUpdate(result._id, { present: true }).exec()
-
-    res.send(responseHandler(result))
-  })
-})
-
-UserHandler.get('/qr', corsMiddleware, (req, res) => {
-  UserModel.findById(req.query.s, (err, result) => {
-    if (err) res.send(errorHandler(err))
-
-    QRCode.toDataURL(req.query.s, { type: 'terminal' }, function (err, src) {
-      if (err) res.send(errorHandler(err))
-
-      ScheduleModel.findOne({ slug: result.schedule_id }, (err, schedule) => {
-        if (err) res.send(errorHandler(err))
-
-        if (! result.mail_confirmed) {
-          transporter.sendMail(
-            {
-              from: 'support@kampustsl.com',
-              to: result.email,
-              subject: `Bukti Pendaftaran Kajian Rutin ${schedule.name}`,
-              attachments: [
-                {
-                  filename: 'qrcode.png',
-                  path: src,
-                },
-              ],
-              html: `
-  بسم الله
-  <p>
-  Ahlan <strong>${toTitleCase(result.name)}!</strong><br/>
-  Berikut QR Code dan bukti pendaftaran : <br/>
-  Tempat : ${schedule.location}<br/>
-  Tanggal : ${schedule.datetime}<br/>
-  Silahkan simpan dan tunjukan QR Code ini pada panitia kajian.<br/>
-  بارك الله فيكم
-  </p>
-  <p>
-  <strong>Catatan :</strong><br/>
-  1. QR Code ini hanya untuk satu orang pendaftar.<br/>
-  2. Mari jaga dan lakukan protokol kesehatan.<br/>
-  </p>
-  <p>
-  Panitia Pendaftaran Kajian  Rutin<br/>
-  Yayasan Tarbiyah Sunnah.<br/>
-  Helpdesk wa.me/62895377710900
-  </p>
-          `,
-            },
-            (err, mailsent) => {
-              if (err) res.send(err)
-
-              UserModel.findByIdAndUpdate(result._id, {mail_confirmed: true}).exec()
-            }
-          )
-        }
-      })
-      res.send({ image: src, ...responseHandler(result) })
+function getSchedule(slug) {
+  return new Promise((resolve, reject) => {
+    Schedule.findOne({slug}, (err, result) => {
+      if (err) reject(err)
+      resolve(result)
     })
   })
-})
+}
 
-UserHandler.get('/wa', (req, res) => {
-  UserModel.findOne({ id: req.query.s, whatsapp: null }, async (err, result) => {
-    if (err) res.send(errorHandler(err))
+UserHandler.get('/:id', (req, res) => {
+  User.findById(req.params.id).then(async (user) => {
+    const qrcode = await getQR(user._id.toString())
+    const schedule = await getSchedule(user.schedule_id)
+    let other = await User.findOne({email: user.email, schedule_id: user.schedule_id, name: {$ne: user.name}}).exec()
 
-    await UserModel.findByIdAndUpdate(req.query.s, { wa_confirmed: true, whatsapp: req.query.n })
-
-    ScheduleModel.findOne({ slug: result.schedule_id }, (err, schedule) => {
-      if (err) res.send(errorHandler(err))
-
-      QRCode.toDataURL(req.query.s, { type: 'terminal' }, function (err, src) {
-        if (err) res.send(errorHandler(err))
-
-        res.send({ image: src, ...responseHandler(result), schedule: schedule })
-      })
-    })
+    other = {...other.toObject(), qrcode: await getQR(other._id.toString())}
+    res.send(responseHandler({...user.toObject(), qrcode, schedule, other}))
+  }).catch(err => {
+    res.status(404).send(errorHandler(err))
   })
 })
 

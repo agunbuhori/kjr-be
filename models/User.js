@@ -5,6 +5,7 @@ const Schema = mongoose.Schema
 
 const User = new Schema({
   uid: String,
+  code: String,
   name: {
     type: String,
     required: true
@@ -27,28 +28,19 @@ const User = new Schema({
     required: true
   },
   present: {
-    type: Boolean,
-    default: false
+    type: Date
   },
   mail_confirmed: {
-    type: Boolean,
-    default: false
+    type: Date
   },
-  
   wa_confirmed: {
-    type: Boolean,
-    default: false
+    type: Date
   },
-
-  
   whatsapp: {
     type: String
   },
   ticket: Number,
-  schedule_id: String,
-  name_2: String,
-  gender_2: String,
-  age_2: Number,
+  schedule_id: String
 
 }, {
   timestamps: true
