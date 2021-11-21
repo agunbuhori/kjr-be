@@ -60,6 +60,7 @@ function getSchedule(slug) {
 }
 
 function sendMail(target, data, attachments = []) {
+  if (! data.user.mail_confirmed)
   return new Promise((resolve, reject) => {
     mailer.sendMail({
       from: 'support@kampustsl.id',
@@ -93,10 +94,13 @@ function sendMail(target, data, attachments = []) {
   Helpdesk wa.me/62895377710900
   </p>
       `
-    }).then((err, sent) => {
+    }).then(async (err, sent) => {
+      await User.findOneAndUpdate({email: data.user.email, schedule_id: data.user.schedule_id}, {mail_confirmed: (new Date()).toLocaleDateString()})
       resolve(sent)
     })
   })
+
+  return false
 }
 
 UserHandler.get('/:id', (req, res) => {
