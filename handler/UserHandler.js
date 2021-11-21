@@ -4,7 +4,7 @@ const cors = require('cors')
 const corsOptions = require('../corsOptions')
 const User = require('../models/User')
 const Schedule = require('../models/Schedule')
-const { makeid } = require('../helpers')
+const { makeid, toTitleCase } = require('../helpers')
 const responseHandler = require('./responseHandler')
 const errorHandler = require('./errorHandler')
 const QRCode = require('qrcode')
@@ -24,12 +24,12 @@ UserHandler.post('/register', async (req, res) => {
   const check = await User.find({schedule_id: req.body.schedule_id}).exec()
 
   if (check.length === 0) {
-    const newUser = new User({...req.body, code: makeid(5, true)})
+    const newUser = new User({...req.body, code: makeid(5, true), name: toTitleCase(req.body.name)})
     const newUserSave = await newUser.save()
 
     if (newUserSave && req.body.name_2 && req.body.age_2 && req.body.gender_2) {
       const {name_2, age_2, gender_2} = req.body
-      const otherUser = new User({...req.body, code: makeid(5, true), name: name_2, age: age_2, gender: gender_2})
+      const otherUser = new User({...req.body, code: makeid(5, true), name: toTitleCase(req.body.name_2), age: age_2, gender: gender_2})
       const otherUserSave = await otherUser.save()
 
       res.send(responseHandler({...newUserSave.toObject(), other: otherUserSave.toObject()}))
@@ -57,15 +57,16 @@ function getSchedule(slug) {
   })
 }
 
-function sendMail(target, data, attachments) {
+function sendMail(target, data, attachments = []) {
   return new Promise((resolve, reject) => {
     mailer.sendMail({
       from: 'support@kampustsl.id',
       to: target,
+      attachments,
       subject: `Bukti Pendaftaran Kajian Rutin ${data.schedule.name}`,
       html: `<p>
   بسم الله <br/>
-  Ahlan ${data.user.name} <br/>
+  Ahlan, <strong>${data.user.name}!</strong> <br/>
   Berikut QR Code dan bukti pendaftaran untuk <strong>${data.schedule.name}</strong><br/>
   Tempat : ${data.schedule.location}<br/>
   Tanggal : ${data.schedule.datetime}<br/>
@@ -77,7 +78,9 @@ function sendMail(target, data, attachments) {
   </p>
   
   <p>
-  <strong>Catatan :</strong><br/>
+  <strong>
+  Tiket : https://kjr.kampustsl.id/${data.user._id}<br/>
+  Catatan :</strong><br/>
   1. QR Code ini hanya untuk satu orang pendaftar.<br/>
   2. Mari jaga dan lakukan protokol kesehatan.
   </p>
