@@ -1,9 +1,12 @@
-var whitelist = ['https://kjr.kampustsl.id', 'http://localhost:3000', undefined]
+var whitelist = ['https://kjr.kampustsl.id', 'http://localhost:3000']
 
 var corsOptions = {
   origin: function (origin, callback) {
-    callback(null, true)
-
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS '))
+    }
   }
 }
 

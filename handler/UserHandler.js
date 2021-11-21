@@ -8,14 +8,30 @@ const UserHandler = app.Router()
 const cors = require('cors')
 const nodemailer = require('nodemailer')
 const corsOptions = require('../corsOptions')
-const corsMiddleware = cors()
-
-UserHandler.use(corsMiddleware)
+const corsMiddleware = cors(corsOptions)
+const jwt = require('jsonwebtoken')
 
 function toTitleCase(str) {
   if (!str) return ''
   return str.replace(/\w\S*/g, function (txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  })
+}
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+
+  if (token == null) return res.sendStatus(401)
+
+  jwt.verify(token, 'LoremIpsumDolorSitAmet', (err, result) => {
+    console.log(err)
+
+    if (err) return res.sendStatus(403)
+
+    req.token = result
+
+    next()
   })
 }
 
@@ -32,7 +48,9 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-UserHandler.get('/list', (req, res) => {
+UserHandler.use(cors())
+
+UserHandler.get('/list', corsMiddleware, (req, res) => {
   UserModel.find({})
     .limit(5)
     .exec((err, result) => {
@@ -42,7 +60,7 @@ UserHandler.get('/list', (req, res) => {
     })
 })
 
-UserHandler.post('/register', (req, res) => {
+UserHandler.post('/register', authenticateToken, corsMiddleware, (req, res) => {
   UserModel.find({email: req.body.email, schedule_id: req.body.schedule_id}, (err, result) => {
     if (result.length === 0) {
       const user = new UserModel({ ...req.body })
@@ -58,7 +76,7 @@ UserHandler.post('/register', (req, res) => {
 
 })
 
-UserHandler.get('/detail/:id', (req, res) => {
+UserHandler.get('/detail/:id', corsMiddleware, (req, res) => {
   UserModel.findById(req.params.id, (err, result) => {
     if (err) res.send(errorHandler(err))
 
@@ -66,7 +84,7 @@ UserHandler.get('/detail/:id', (req, res) => {
   })
 })
 
-UserHandler.get('/scan/:id', (req, res) => {
+UserHandler.get('/scan/:id', corsMiddleware, (req, res) => {
   UserModel.findById(req.params.id, async (err, result) => {
     if (err) res.send(errorHandler(err))
 
@@ -76,7 +94,7 @@ UserHandler.get('/scan/:id', (req, res) => {
   })
 })
 
-UserHandler.get('/qr', (req, res) => {
+UserHandler.get('/qr', corsMiddleware, (req, res) => {
   UserModel.findById(req.query.s, (err, result) => {
     if (err) res.send(errorHandler(err))
 

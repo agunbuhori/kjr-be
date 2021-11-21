@@ -6,7 +6,7 @@ const ScheduleHandler = app.Router()
 const cors = require('cors')
 const corsOptions = require('../corsOptions')
 
-ScheduleHandler.use(cors(corsOptions))
+const corsMiddleware = cors(corsOptions)
 
 function formatDate(times) {
   const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
@@ -41,7 +41,7 @@ ScheduleHandler.post('/create', (req, res) => {
     .catch((err) => res.send(errorHandler(err)))
 })
 
-ScheduleHandler.get('/detail/:slug', (req, res) => {
+ScheduleHandler.get('/detail/:slug', corsMiddleware, (req, res) => {
   ScheduleModel.findOne({ slug: req.params.slug, datetime: {$gte: (new Date).toISOString()} }, (err, result) => {
     if (err || !result) res.send(errorHandler(err))
 
