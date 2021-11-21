@@ -58,35 +58,39 @@ function getSchedule(slug) {
 }
 
 function sendMail(target, data, attachments) {
-  mailer.sendMail({
-    from: 'support@kampustsl.id',
-    to: target,
-    subject: `Bukti Pendaftaran Kajian Rutin ${data.schedule.name}`,
-    html: `<p>
-بسم الله <br/>
-Ahlan ${data.user.name} <br/>
-Berikut QR Code dan bukti pendaftaran untuk <strong>${data.schedule.name}</strong><br/>
-Tempat : ${data.schedule.location}<br/>
-Tanggal : ${data.schedule.datetime}<br/>
-</p>
-
-<p>
-Silahkan simpan dan tunjukan QR Code ini pada panitia kajian. <br/>
-بارك الله فيكم 
-</p>
-
-<p>
-<strong>Catatan :</strong><br/>
-1. QR Code ini hanya untuk satu orang pendaftar.<br/>
-2. Mari jaga dan lakukan protokol kesehatan.
-</p>
-
-<p>
-Panitia Pendaftaran Kajian  Rutin<br/>
-Yayasan Tarbiyah Sunnah.<br/>
-Helpdesk wa.me/62895377710900
-</p>
-    `
+  return new Promise((resolve, reject) => {
+    mailer.sendMail({
+      from: 'support@kampustsl.id',
+      to: target,
+      subject: `Bukti Pendaftaran Kajian Rutin ${data.schedule.name}`,
+      html: `<p>
+  بسم الله <br/>
+  Ahlan ${data.user.name} <br/>
+  Berikut QR Code dan bukti pendaftaran untuk <strong>${data.schedule.name}</strong><br/>
+  Tempat : ${data.schedule.location}<br/>
+  Tanggal : ${data.schedule.datetime}<br/>
+  </p>
+  
+  <p>
+  Silahkan simpan dan tunjukan QR Code ini pada panitia kajian. <br/>
+  بارك الله فيكم 
+  </p>
+  
+  <p>
+  <strong>Catatan :</strong><br/>
+  1. QR Code ini hanya untuk satu orang pendaftar.<br/>
+  2. Mari jaga dan lakukan protokol kesehatan.
+  </p>
+  
+  <p>
+  Panitia Pendaftaran Kajian  Rutin<br/>
+  Yayasan Tarbiyah Sunnah.<br/>
+  Helpdesk wa.me/62895377710900
+  </p>
+      `
+    }).then((err, sent) => {
+      resolve(sent)
+    })
   })
 }
 
