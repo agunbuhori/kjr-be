@@ -81,7 +81,7 @@ function sendMail(target, data, attachments = []) {
   
   <p>
   <strong>
-  Tiket : https://kjr.kampustsl.id/${data.user._id}<br/>
+  Tiket : https://kjr.kampustsl.id/detail/${data.user._id}<br/>
   Catatan :</strong><br/>
   1. QR Code ini hanya untuk satu orang pendaftar.<br/>
   2. Mari jaga dan lakukan protokol kesehatan.
