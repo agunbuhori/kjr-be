@@ -6,10 +6,11 @@ const ScheduleHandler = app.Router()
 const cors = require('cors')
 const corsOptions = require('../corsOptions')
 const { getSlug } = require('../helpers')
+const authorize = require('../config/authorize')
 
 const corsMiddleware = cors(corsOptions)
 
-ScheduleHandler.get('/list', (req, res) => {
+ScheduleHandler.get('/list', authorize, (req, res) => {
   ScheduleModel.find({}, (err, result) => {
     if (err) res.send(errorHandler(err))
 
@@ -17,7 +18,7 @@ ScheduleHandler.get('/list', (req, res) => {
   })
 })
 
-ScheduleHandler.post('/create', (req, res) => {
+ScheduleHandler.post('/create', authorize, (req, res) => {
   const times = new Date(req.body.datetime)
   const schedule = new ScheduleModel({ ...req.body, slug: getSlug(times) })
 
