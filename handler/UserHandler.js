@@ -102,7 +102,7 @@ function sendMail(target, data, attachments = [], other = null) {
       subject: `Bukti Pendaftaran Kajian Rutin ${data.schedule.name}`,
       html: template
     }).then(async (err, sent) => {
-      await User.findOneAndUpdate({email: data.user.email, schedule_id: data.user.schedule_id}, {mail_confirmed: (new Date()).toLocaleDateString()})
+      await User.updateMany({email: data.user.email, schedule_id: data.user.schedule_id}, {mail_confirmed: (new Date()).toLocaleDateString()})
       resolve(sent)
     })
   })
