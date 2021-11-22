@@ -145,7 +145,7 @@ function appMiddleware(req, res, next) {
   if (req.headers['Authorization'] = 'Bearer 3B04E2BED68AA248DEE1734DC0FF519ABC6EE8290F324975C6FAFF3EE24710F45784707FE44120C3CEBD4A75491679DCE5AF9AF6BF2F14AA4FEA73319BAB8B5A') {
     next()
   } else {
-    res.status(403).send("Unauthorized")
+    throw new Error("Unauthorized")
   }
 }
 
