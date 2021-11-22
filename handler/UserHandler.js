@@ -60,7 +60,6 @@ function getSchedule(slug) {
 }
 
 function sendMail(target, data, attachments = []) {
-  if (! data.user.mail_confirmed)
   return new Promise((resolve, reject) => {
     mailer.sendMail({
       from: 'support@kampustsl.id',
@@ -99,8 +98,6 @@ function sendMail(target, data, attachments = []) {
       resolve(sent)
     })
   })
-
-  return false
 }
 
 UserHandler.get('/:id', (req, res) => {
@@ -125,7 +122,9 @@ UserHandler.get('/:id', (req, res) => {
       })
     }
 
-    sendMail(user.email, {schedule, user}, attachments)
+    if (user.mail_confirmed) {
+      sendMail(user.email, {schedule, user}, attachments)
+    }
 
     res.send(responseHandler({...user.toObject(), qrcode, schedule, other}))
   }).catch(err => {
