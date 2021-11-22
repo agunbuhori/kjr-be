@@ -140,4 +140,14 @@ UserHandler.get('/:id', (req, res) => {
   })
 })
 
+UserHandler.post('/scan/:id', (req, res) => {
+  User.findById(req.params.id).then(async (user) => {
+    await User.findByIdAndUpdate(req.params.id, {present: (new Date).toLocaleDateString(), device: req.body.device});
+
+    res.send(user);
+  }).catch(err => {
+    res.status(404).send(errorHandler(err));
+  })
+});
+
 module.exports = UserHandler
