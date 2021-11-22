@@ -108,7 +108,7 @@ UserHandler.get('/:id', (req, res) => {
 
     const attachments = [
       {
-        filename: user.name.code + ' ' + user.name.concat('.png'),
+        filename: user.code + ' ' + user.name.concat('.png'),
         path: qrcode
       }
     ]
@@ -117,7 +117,7 @@ UserHandler.get('/:id', (req, res) => {
       const other_qrcode = await getQR(other._id.toString())
       other = {...other.toObject(), qrcode: other_qrcode}
       attachments.push({
-        filename: other.name.code + ' ' + other.name.concat('.png'),
+        filename: other.code + ' ' + other.name.concat('.png'),
         path: other_qrcode
       })
     }
