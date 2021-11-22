@@ -73,9 +73,7 @@ function sendMail(target, data, attachments = [], other = null) {
     Silahkan simpan dan tunjukan QR Code ini pada panitia kajian. <br/>
     بارك الله فيكم 
     </p>
-
     {OTHER}
-    
     <p>
     <strong>
     Tiket : https://kjr.kampustsl.id/detail/${data.user._id}<br/>
