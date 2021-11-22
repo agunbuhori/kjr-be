@@ -143,7 +143,7 @@ UserHandler.get('/:id', (req, res) => {
   })
 })
 
-UserHandler.post('/scan/:id', (req, res) => {
+UserHandler.post('/scan/:id', authorize, (req, res) => {
   User.findById(req.params.id).then(async (user) => {
     await User.findByIdAndUpdate(req.params.id, {present: (new Date), device: req.body.device});
 
@@ -153,7 +153,7 @@ UserHandler.post('/scan/:id', (req, res) => {
   })
 });
 
-UserHandler.post('/code-scan', (req, res) => {
+UserHandler.post('/code-scan', authorize, (req, res) => {
   User.findOne({code: req.body.code, schedule_id: req.body.schedule_id}).then(async (user) => {
     await User.findOneAndUpdate({code: req.body.code, schedule_id: req.body.schedule_id}, {present: (new Date), device: req.body.device});
 
