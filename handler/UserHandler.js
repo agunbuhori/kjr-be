@@ -102,7 +102,7 @@ function sendMail(target, data, attachments = [], other = null) {
       subject: `Bukti Pendaftaran Kajian Rutin ${data.schedule.name}`,
       html: template
     }).then(async (err, sent) => {
-      await User.updateMany({email: data.user.email, schedule_id: data.user.schedule_id}, {mail_confirmed: (new Date()).toLocaleDateString()})
+      await User.updateMany({email: data.user.email, schedule_id: data.user.schedule_id}, {mail_confirmed: (new Date())})
       resolve(sent)
     })
   })
@@ -142,12 +142,23 @@ UserHandler.get('/:id', (req, res) => {
 
 UserHandler.post('/scan/:id', (req, res) => {
   User.findById(req.params.id).then(async (user) => {
-    await User.findByIdAndUpdate(req.params.id, {present: (new Date).toLocaleDateString(), device: req.body.device});
+    await User.findByIdAndUpdate(req.params.id, {present: (new Date), device: req.body.device});
 
     res.send(responseHandler(user));
   }).catch(err => {
     res.status(404).send(errorHandler(err));
   })
 });
+
+UserHandler.post('/code-scan', (req, res) => {
+  User.findById(req.params.id).then(async (user) => {
+    await User.findOneAndUpdate({code: req.body.code, schedule_id: req.body.schedule_id}, {present: (new Date), device: req.body.device});
+
+    res.send(responseHandler(user));
+  }).catch(err => {
+    res.status(404).send(errorHandler(err));
+  })
+});
+
 
 module.exports = UserHandler
