@@ -40,7 +40,8 @@ const User = new Schema({
     type: String
   },
   ticket: Number,
-  schedule_id: String
+  schedule_id: String,
+  device: String
 
 }, {
   timestamps: true
