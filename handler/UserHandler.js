@@ -59,40 +59,48 @@ function getSchedule(slug) {
   })
 }
 
-function sendMail(target, data, attachments = []) {
+function sendMail(target, data, attachments = [], other = null) {
   return new Promise((resolve, reject) => {
+    let template = `<p>
+    بسم الله <br/>
+    Ahlan, <strong>${data.user.name}!</strong> <br/>
+    Berikut QR Code dan bukti pendaftaran untuk <strong>${data.schedule.name}</strong><br/>
+    Tempat : ${data.schedule.location}<br/>
+    Tanggal : ${data.schedule.datetime}<br/>
+    </p>
+    
+    <p>
+    Silahkan simpan dan tunjukan QR Code ini pada panitia kajian. <br/>
+    بارك الله فيكم 
+    </p>
+
+    {OTHER}
+    
+    <p>
+    <strong>
+    Tiket : https://kjr.kampustsl.id/detail/${data.user._id}<br/>
+    Catatan :</strong><br/>
+    1. QR Code ini hanya untuk satu orang pendaftar.<br/>
+    2. Mari jaga dan lakukan protokol kesehatan.
+    </p>
+    
+    <p>
+    Panitia Pendaftaran Kajian  Rutin<br/>
+    Yayasan Tarbiyah Sunnah.<br/>
+    Helpdesk wa.me/62895377710900
+    </p>
+        `;
+    if (other) {
+      template = template.replace(/\{OTHER\}/, `
+        <p>Tiket ini terdaftar juga atas nama <strong>${other.name}.</strong></p>
+      `);
+    }
     mailer.sendMail({
       from: 'support@kampustsl.id',
       to: target,
       attachments,
       subject: `Bukti Pendaftaran Kajian Rutin ${data.schedule.name}`,
-      html: `<p>
-  بسم الله <br/>
-  Ahlan, <strong>${data.user.name}!</strong> <br/>
-  Berikut QR Code dan bukti pendaftaran untuk <strong>${data.schedule.name}</strong><br/>
-  Tempat : ${data.schedule.location}<br/>
-  Tanggal : ${data.schedule.datetime}<br/>
-  </p>
-  
-  <p>
-  Silahkan simpan dan tunjukan QR Code ini pada panitia kajian. <br/>
-  بارك الله فيكم 
-  </p>
-  
-  <p>
-  <strong>
-  Tiket : https://kjr.kampustsl.id/detail/${data.user._id}<br/>
-  Catatan :</strong><br/>
-  1. QR Code ini hanya untuk satu orang pendaftar.<br/>
-  2. Mari jaga dan lakukan protokol kesehatan.
-  </p>
-  
-  <p>
-  Panitia Pendaftaran Kajian  Rutin<br/>
-  Yayasan Tarbiyah Sunnah.<br/>
-  Helpdesk wa.me/62895377710900
-  </p>
-      `
+      html: template
     }).then(async (err, sent) => {
       await User.findOneAndUpdate({email: data.user.email, schedule_id: data.user.schedule_id}, {mail_confirmed: (new Date()).toLocaleDateString()})
       resolve(sent)
@@ -123,7 +131,7 @@ UserHandler.get('/:id', (req, res) => {
     }
 
     if (! user.mail_confirmed) {
-      sendMail(user.email, {schedule, user}, attachments)
+      sendMail(user.email, {schedule, user}, attachments, other)
     }
 
     res.send(responseHandler({...user.toObject(), qrcode, schedule, other}))
