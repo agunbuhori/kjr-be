@@ -11,7 +11,7 @@ const authorize = require('../config/authorize')
 const corsMiddleware = cors(corsOptions)
 
 ScheduleHandler.get('/list', authorize, (req, res) => {
-  ScheduleModel.find({}, (err, result) => {
+  ScheduleModel.find({}, [], {sort: {datetime: 1}}, (err, result) => {
     if (err) res.send(errorHandler(err))
 
     res.send(responseHandler(result))
