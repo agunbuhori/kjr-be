@@ -13,7 +13,15 @@ const e = require('express')
 
 UserHandler.use(cors(corsOptions))
 
-UserHandler.get('/list', (req, res) => {
+function authorize(req, res, next) {
+  if (req.headers.Authorization == 'Bearer bla bla bla') {
+    next();
+  } else {
+    res.status(403).send("Unauthorized");
+  }
+}
+
+UserHandler.get('/list', authorize, (req, res) => {
   User.find({}, ['-_id', 'name', 'created_at', 'mail_confirmed', 'wa_confirmed', 'present', 'device'], (err, result) => res.send(responseHandler(result)))
 })
 
