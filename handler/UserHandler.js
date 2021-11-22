@@ -94,6 +94,8 @@ function sendMail(target, data, attachments = [], other = null) {
       template = template.replace(/\{OTHER\}/, `
         <p>Tiket ini terdaftar juga atas nama <strong>${other.name}.</strong></p>
       `);
+    } else {
+      template = template.replace(/\{OTHER\}/, '');
     }
     mailer.sendMail({
       from: 'support@kampustsl.id',
