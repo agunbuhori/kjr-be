@@ -141,15 +141,7 @@ UserHandler.get('/:id', (req, res) => {
   })
 })
 
-function appMiddleware(req, res, next) {
-  if (req.headers['Authorization'] = 'Bearer 3B04E2BED68AA248DEE1734DC0FF519ABC6EE8290F324975C6FAFF3EE24710F45784707FE44120C3CEBD4A75491679DCE5AF9AF6BF2F14AA4FEA73319BAB8B5A') {
-    next()
-  } else {
-    throw new Error("Unauthorized")
-  }
-}
-
-UserHandler.post('/scan/:id', appMiddleware, (req, res) => {
+UserHandler.post('/scan/:id', (req, res) => {
   User.findById(req.params.id).then(async (user) => {
     await User.findByIdAndUpdate(req.params.id, {present: (new Date), device: req.body.device});
 
@@ -159,7 +151,7 @@ UserHandler.post('/scan/:id', appMiddleware, (req, res) => {
   })
 });
 
-UserHandler.post('/code-scan', appMiddleware, (req, res) => {
+UserHandler.post('/code-scan', (req, res) => {
   User.findOne({code: req.body.code, schedule_id: req.body.schedule_id}).then(async (user) => {
     await User.findOneAndUpdate({code: req.body.code, schedule_id: req.body.schedule_id}, {present: (new Date), device: req.body.device});
 
