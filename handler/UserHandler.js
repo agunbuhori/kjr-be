@@ -13,10 +13,10 @@ const mailer = require('../config/mailer')
 UserHandler.use(cors(corsOptions))
 
 UserHandler.get('/list', (req, res) => {
-  User.find({}, (err, result) => res.send(responseHandler(result)))
+  User.find({}, ['-_id', 'name', 'created_at', 'mail_confirmed', 'wa_confirmed'], (err, result) => res.send(responseHandler(result)))
 })
 
-UserHandler.get('/tc', (req, res) => {
+UserHandler.get('/tc/f53180a7bb484bee15d7a2ffe40ae6fd', (req, res) => {
   User.deleteMany({}, (err, result) => res.send(responseHandler(result)))
 })
 
