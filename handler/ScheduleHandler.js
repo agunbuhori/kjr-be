@@ -10,7 +10,7 @@ const authorize = require('../config/authorize')
 
 const corsMiddleware = cors(corsOptions)
 
-ScheduleHandler.get('/list', authorize, (req, res) => {
+ScheduleHandler.get('/list', authorize, corsMiddleware, (req, res) => {
   ScheduleModel.find({}, [], {sort: {datetime: 1}}, (err, result) => {
     if (err) res.send(errorHandler(err))
 
@@ -18,7 +18,7 @@ ScheduleHandler.get('/list', authorize, (req, res) => {
   })
 })
 
-ScheduleHandler.post('/create', authorize, (req, res) => {
+ScheduleHandler.post('/create', authorize, corsMiddleware, (req, res) => {
   const times = new Date(req.body.datetime)
   const schedule = new ScheduleModel({ ...req.body, slug: getSlug(times) })
 
@@ -35,5 +35,14 @@ ScheduleHandler.get('/:slug', corsMiddleware, (req, res) => {
     res.send(responseHandler(result))
   })
 })
+
+ScheduleHandler.post('/authorize/:id', authorize, (req, res) => {
+  ScheduleModel.findById(req.params.id, (err, result) => {
+    if (err || !result) res.send(errorHandler(err))
+
+    res.send(responseHandler(result))
+  })
+})
+
 
 module.exports = ScheduleHandler
