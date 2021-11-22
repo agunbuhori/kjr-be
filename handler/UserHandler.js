@@ -151,7 +151,7 @@ UserHandler.post('/scan/:id', (req, res) => {
 });
 
 UserHandler.post('/code-scan', (req, res) => {
-  User.findById(req.params.id).then(async (user) => {
+  User.findById({code: req.body.code, schedule_id: req.body.schedule_id}).then(async (user) => {
     await User.findOneAndUpdate({code: req.body.code, schedule_id: req.body.schedule_id}, {present: (new Date), device: req.body.device});
 
     res.send(responseHandler(user));
