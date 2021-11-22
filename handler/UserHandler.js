@@ -122,7 +122,7 @@ UserHandler.get('/:id', (req, res) => {
       })
     }
 
-    if (user.mail_confirmed) {
+    if (! user.mail_confirmed) {
       sendMail(user.email, {schedule, user}, attachments)
     }
 
