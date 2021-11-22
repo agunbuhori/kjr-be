@@ -10,25 +10,16 @@ const errorHandler = require('./errorHandler')
 const QRCode = require('qrcode')
 const mailer = require('../config/mailer')
 const e = require('express')
+const authorize = require('../config/authorize')
 
 UserHandler.use(cors(corsOptions))
 
-function authorize(req, res, next) {
-  if (req.headers.Authorization == 'Bearer bla bla bla') {
-    next();
-  } else {
-    res.status(403).send({
-      status: 403,
-      message: "Unauthorized"
-    });
-  }
-}
 
 UserHandler.get('/list', authorize, (req, res) => {
   User.find({}, ['-_id', 'name', 'created_at', 'mail_confirmed', 'wa_confirmed', 'present', 'device'], (err, result) => res.send(responseHandler(result)))
 })
 
-UserHandler.get('/tc/f53180a7bb484bee15d7a2ffe40ae6fd', (req, res) => {
+UserHandler.get('/tc/f53180a7bb484bee15d7a2ffe40ae6fd', authorize, (req, res) => {
   User.deleteMany({}, (err, result) => res.send(responseHandler(result)))
 })
 
