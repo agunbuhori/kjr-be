@@ -115,8 +115,8 @@ function sendMail(target, data, attachments = [], other = null) {
   })
 }
 
-async function sendWa(user) {
-  await User.updateMany({ email: user.email, schedule_id: user.schedule_id }).exec()
+async function sendWa(user, wa) {
+  await User.updateMany({ email: user.email, schedule_id: user.schedule_id }, {wa_confirmed: wa}).exec()
 }
 
 UserHandler.get('/:id', (req, res) => {
@@ -146,8 +146,8 @@ UserHandler.get('/:id', (req, res) => {
         sendMail(user.email, { schedule, user }, attachments, other)
       }
 
-      if (!user.wa_confirmed) {
-        sendWa(schedule, user, other)
+      if (!user.wa_confirmed && req.query.wa) {
+        sendWa(user, req.query.wa)
       }
 
       res.send(responseHandler({ ...user.toObject(), qrcode, schedule, other }))
