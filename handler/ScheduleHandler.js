@@ -29,7 +29,7 @@ ScheduleHandler.post('/create', authorize, corsMiddleware, (req, res) => {
 })
 
 ScheduleHandler.get('/:slug', corsMiddleware, (req, res) => {
-  ScheduleModel.findOne({ slug: req.params.slug, datetime: {$gte: (new Date)} }, (err, result) => {
+  ScheduleModel.findOne({ slug: req.params.slug}, (err, result) => {
     if (err || !result) res.send(errorHandler(err))
 
     res.send(responseHandler(result))
