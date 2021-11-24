@@ -115,10 +115,6 @@ function sendMail(target, data, attachments = [], other = null) {
   })
 }
 
-async function sendWa(user, wa) {
-  await User.updateMany({ email: user.email, schedule_id: user.schedule_id }, {wa_confirmed: wa}).exec()
-}
-
 UserHandler.get('/:id', (req, res) => {
   User.findById(req.params.id)
     .then(async (user) => {
@@ -147,7 +143,7 @@ UserHandler.get('/:id', (req, res) => {
       }
 
       if (!user.wa_confirmed && req.query.wa) {
-        sendWa(user, req.query.wa)
+        await User.updateMany({ email: user.email, schedule_id: user.schedule_id }, {wa_confirmed: req.query.wa}).exec()
       }
 
       res.send(responseHandler({ ...user.toObject(), qrcode, schedule, other }))
