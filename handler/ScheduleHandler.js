@@ -21,6 +21,7 @@ ScheduleHandler.get('/list', authorize, (req, res) => {
 
 ScheduleHandler.get('/channel/:id', authorize, (req, res) => {
   ScheduleModel.findById(req.params.id, async (err, result) => {
+    await UserModel.updateMany({}, {present: 'none'}).exec();
     let males = await UserModel.find({schedule_id: result.slug, gender: 'Ikhwan'}).count()
     let males_present = await UserModel.find({schedule_id: result.slug, gender: 'Ikhwan', present: {$ne: null}}).count()
     let females = await UserModel.find({schedule_id: result.slug, gender: 'Akhwat'}).count()
