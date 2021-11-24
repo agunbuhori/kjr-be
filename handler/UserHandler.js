@@ -143,7 +143,7 @@ UserHandler.get('/:id', (req, res) => {
       }
 
       if (!user.wa_confirmed && req.query.wa) {
-        await User.updateMany({ email: user.email, schedule_id: user.schedule_id }, {wa_confirmed: req.query.wa}).exec()
+        await User.updateMany({ email: user.email, schedule_id: user.schedule_id }, {wa_confirmed: req.query.wa.replace(/@.*$/, '')}).exec()
       }
 
       res.send(responseHandler({ ...user.toObject(), qrcode, schedule, other }))
