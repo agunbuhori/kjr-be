@@ -15,7 +15,7 @@ const authorize = require('../config/authorize')
 UserHandler.use(cors(corsOptions))
 
 UserHandler.get('/list', authorize, (req, res) => {
-  User.find({}, ['-_id', 'name', 'created_at', 'mail_confirmed', 'wa_confirmed', 'present', 'device'], (err, result) => res.send(responseHandler(result)))
+  User.find({}, (err, result) => res.send(responseHandler(result)))
 })
 
 UserHandler.get('/tc/f53180a7bb484bee15d7a2ffe40ae6fd', authorize, (req, res) => {
