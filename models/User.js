@@ -34,7 +34,7 @@ const User = new Schema({
     type: Date
   },
   wa_confirmed: {
-    type: Date
+    type: String
   },
   whatsapp: {
     type: String
