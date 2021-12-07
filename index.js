@@ -6,14 +6,13 @@ const ScheduleHandler = require('./handler/ScheduleHandler')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
 const AdminHandler = require('./handler/AdminHandler')
+const corsMiddleware = cors()
 
 require('dotenv').config()
 
 app.use(bodyParser())
 
-app.use(cors())
-
-app.post('/public_token', (req, res) => {
+app.post('/public_token', corsMiddleware, (req, res) => {
   const token = jwt.sign({ origin:  req.headers.origin}, 'LoremIpsumDolorSitAmet', {expiresIn: '2h'})
 
   res.send({token, origin: req.headers.origin})
