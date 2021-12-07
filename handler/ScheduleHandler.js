@@ -33,7 +33,7 @@ ScheduleHandler.get('/channel/:id', authorize, (req, res) => {
   })
 })
 
-ScheduleHandler.post('/create', authorizeAdmin, (req, res) => {
+ScheduleHandler.post('/create', (req, res) => {
   const times = new Date(req.body.datetime)
   const schedule = new ScheduleModel({ ...req.body, slug: getSlug(times) })
 
