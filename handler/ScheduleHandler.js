@@ -8,13 +8,15 @@ const corsOptions = require('../corsOptions')
 const { getSlug } = require('../helpers')
 const authorize = require('../config/authorize')
 const UserModel = require('../models/User')
+const authorizeAdmin = require('../config/authorizeAdmin')
 
 const corsMiddleware = cors(corsOptions)
+
+ScheduleHandler.use(corsMiddleware)
 
 ScheduleHandler.get('/list', authorize, (req, res) => {
   ScheduleModel.find({}, [], { sort: { datetime: 1 } }, (err, result) => {
     if (err) res.send(errorHandler(err))
-
     res.send(responseHandler(result))
   })
 })
@@ -31,7 +33,7 @@ ScheduleHandler.get('/channel/:id', authorize, (req, res) => {
   })
 })
 
-ScheduleHandler.post('/create', authorize, (req, res) => {
+ScheduleHandler.post('/create', authorizeAdmin, (req, res) => {
   const times = new Date(req.body.datetime)
   const schedule = new ScheduleModel({ ...req.body, slug: getSlug(times) })
 

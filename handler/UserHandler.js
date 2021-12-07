@@ -9,7 +9,6 @@ const responseHandler = require('./responseHandler')
 const errorHandler = require('./errorHandler')
 const QRCode = require('qrcode')
 const mailer = require('../config/mailer')
-const e = require('express')
 const authorize = require('../config/authorize')
 
 UserHandler.use(cors(corsOptions))
@@ -143,7 +142,7 @@ UserHandler.get('/:id', (req, res) => {
       }
 
       if (!user.wa_confirmed && req.query.wa) {
-        await User.updateMany({ email: user.email, schedule_id: user.schedule_id }, {wa_confirmed: req.query.wa.replace(/@.*$/, '')}).exec()
+        await User.updateMany({ email: user.email, schedule_id: user.schedule_id }, { wa_confirmed: req.query.wa.replace(/@.*$/, '') }).exec()
       }
 
       res.send(responseHandler({ ...user.toObject(), qrcode, schedule, other }))
