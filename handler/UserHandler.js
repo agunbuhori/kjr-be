@@ -5,21 +5,12 @@ const corsOptions = require('../corsOptions')
 const User = require('../models/User')
 const Schedule = require('../models/Schedule')
 const { makeid, toTitleCase } = require('../helpers')
-const responseHandler = require('./responseHandler')
-const errorHandler = require('./errorHandler')
 const QRCode = require('qrcode')
 const mailer = require('../config/mailer')
 const authorize = require('../config/authorize')
+const { succesHandler, errorHandler } = require('./handler')
 
 UserHandler.use(cors(corsOptions))
-
-UserHandler.get('/list', authorize, (req, res) => {
-  User.find({}, (err, result) => res.send(responseHandler(result)))
-})
-
-UserHandler.get('/tc/f53180a7bb484bee15d7a2ffe40ae6fd', authorize, (req, res) => {
-  User.deleteMany({}, (err, result) => res.send(responseHandler(result)))
-})
 
 UserHandler.post('/register', async (req, res) => {
   const check = await User.find({ schedule_id: req.body.schedule_id, email: req.body.email }).exec()
@@ -33,10 +24,10 @@ UserHandler.post('/register', async (req, res) => {
       const otherUser = new User({ ...req.body, code: makeid(5), name: toTitleCase(name_2), age: age_2, gender: gender_2 })
       const otherUserSave = await otherUser.save()
 
-      res.send(responseHandler({ ...newUserSave.toObject(), other: otherUserSave.toObject() }))
+      res.send(succesHandler({ ...newUserSave.toObject(), other: otherUserSave.toObject() }))
     }
 
-    res.send(responseHandler(newUserSave))
+    res.send(succesHandler(newUserSave))
   } else {
     res.send(errorHandler('Antum sudah melakukan registrasi'))
   }
@@ -145,7 +136,7 @@ UserHandler.get('/:id', (req, res) => {
         await User.updateMany({ email: user.email, schedule_id: user.schedule_id }, { wa_confirmed: req.query.wa.replace(/@.*$/, '') }).exec()
       }
 
-      res.send(responseHandler({ ...user.toObject(), qrcode, schedule, other }))
+      res.send(succesHandler({ ...user.toObject(), qrcode, schedule, other }))
     })
     .catch((err) => {
       res.status(404).send(errorHandler(err))
@@ -157,7 +148,7 @@ UserHandler.post('/scan/:id', authorize, (req, res) => {
     .then(async (user) => {
       await User.findByIdAndUpdate(req.params.id, { present: new Date(), device: req.body.device })
 
-      res.send(responseHandler(user))
+      res.send(succesHandler(user))
     })
     .catch((err) => {
       res.status(404).send(errorHandler(err))
@@ -169,7 +160,7 @@ UserHandler.post('/code-scan', authorize, (req, res) => {
     .then(async (user) => {
       await User.findOneAndUpdate({ code: req.body.code, schedule_id: req.body.schedule_id }, { present: new Date(), device: req.body.device })
 
-      res.send(responseHandler(user))
+      res.send(succesHandler(user))
     })
     .catch((err) => {
       res.status(404).send(errorHandler(err))
