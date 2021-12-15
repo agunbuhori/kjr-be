@@ -1,15 +1,27 @@
 version: '3'
+networks:
+  kjr:
+    driver: bridge
 services:
-  app:
-    container_name: docker-node-mongo
+  node:
     restart: always
     build: .
     ports:
-      - '5000:5000'
-    external_links:
+      - 5000:80
+    volumes:
+      - ./:/code
+    networks:
+      - kjr
+    depends_on:
       - mongo
   mongo:
-    container_name: mongo
     image: mongo
+    container_name: mongo
     ports:
-      - '27018:27017'
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
+    networks:
+      - kjr
+volumes:
+ mongodb:

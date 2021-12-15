@@ -25,6 +25,6 @@ app.post('/public_token', (req, res) => {
 app.use('/user', UserHandler)
 app.use('/schedule', ScheduleHandler)
 
-app.listen(5000, () => {
+app.listen(80, () => {
   console.log("Server running");
 })
