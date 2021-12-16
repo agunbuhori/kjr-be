@@ -27,6 +27,6 @@ app.use('/user', UserHandler)
 app.use('/schedule', ScheduleHandler)
 app.use('/admin', AdminHandler)
 
-app.listen(5000, () => {
+app.listen(80, () => {
   console.log("Server running");
 })
