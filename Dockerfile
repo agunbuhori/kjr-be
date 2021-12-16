@@ -4,7 +4,8 @@ WORKDIR /app
 COPY ["package.json", "package-lock.json*", "./"]
 
 RUN npm install
+RUN npm i -g pm2
 COPY . .
 
 EXPOSE 80
-CMD ["npm", "start"]
+CMD ["pm2", "start", "index"]

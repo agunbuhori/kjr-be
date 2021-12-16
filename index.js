@@ -3,9 +3,9 @@ const app = express()
 const bodyParser = require('body-parser')
 const UserHandler = require('./handler/UserHandler')
 const ScheduleHandler = require('./handler/ScheduleHandler')
+const AdminHandler = require('./handler/AdminHandler')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
-const AdminHandler = require('./handler/AdminHandler')
 
 require('dotenv').config()
 
