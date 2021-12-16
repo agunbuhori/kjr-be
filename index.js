@@ -23,9 +23,9 @@ app.post('/public_token', (req, res) => {
   res.send({token, origin: req.headers.origin})
 })
 
+app.use('/admin', AdminHandler)
 app.use('/user', UserHandler)
 app.use('/schedule', ScheduleHandler)
-app.use('/admin', AdminHandler)
 
 app.listen(80, () => {
   console.log("Server running");
