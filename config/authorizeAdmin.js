@@ -7,7 +7,7 @@ function authorizeAdmin(req, res, next) {
     let token = req.headers.authorization.replace('Bearer ', '')
     let auth = jwt.decode(token, SECRET)
 
-    if (auth?.username === 'kjr') {
+    if (auth.username === 'kjr') {
       next()
     } else {
       return res.status(403).send(errorHandler("Unauthorized"))

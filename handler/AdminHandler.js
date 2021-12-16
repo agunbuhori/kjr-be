@@ -10,6 +10,11 @@ const { getSlug } = require('../helpers')
 const USERNAME = "kjr"
 const PASSWORD = "Kjr2021!!!"
 
+AdminHandler.get('/test', (req, res) => {
+  User.find({}).limit(1).exec((err, result) => {
+    res.send(result)
+  })
+})
 AdminHandler.post('/login', (req, res) => {
   if (req.body.username === USERNAME && req.body.password === PASSWORD) {
     const token = jwt.sign({username: req.body.username}, "TSLKJRAmanLoremIpsum");
