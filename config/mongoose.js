@@ -3,7 +3,7 @@ require('dotenv').config()
 
 
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb://localhost:27017/kjr-mongo-v4';
+var mongoDB = 'mongodb://localhost:27017/kajianrutin';
 
 mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true}).then((msg) => {
   console.log(msg)
