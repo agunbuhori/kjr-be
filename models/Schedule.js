@@ -13,6 +13,8 @@ const Schedule = new Schema({
   facilitator: String,
   location: String,
   datetime: String,
+  male_quota: Number,
+  female_quota: Number,
   maps: String
 }, {
   timestamps: true

@@ -5,6 +5,7 @@ const UserHandler = require('./handler/UserHandler')
 const ScheduleHandler = require('./handler/ScheduleHandler')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
+const AdminHandler = require('./handler/AdminHandler')
 
 require('dotenv').config()
 
@@ -24,7 +25,8 @@ app.post('/public_token', (req, res) => {
 
 app.use('/user', UserHandler)
 app.use('/schedule', ScheduleHandler)
+app.use('/admin', AdminHandler)
 
-app.listen(80, () => {
+app.listen(5000, () => {
   console.log("Server running");
 })
