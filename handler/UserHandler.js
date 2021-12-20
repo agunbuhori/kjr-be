@@ -13,6 +13,12 @@ const ScheduleModel = require('../models/Schedule')
 
 UserHandler.use(cors(corsOptions))
 
+UserHandler.get('/test', (req, res) => {
+  User.find({}, (err, result) => {
+    res.send(result)
+  })
+})
+
 UserHandler.post('/register', async (req, res) => {
   const check = await User.find({ schedule_id: req.body.schedule_id, email: req.body.email }).exec()
 
@@ -183,11 +189,7 @@ UserHandler.delete('/:email/:gender/crxky', async (req, res) => {
   res.send("hmm")
 })
 
-UserHandler.get('/test', (req, res) => {
-  User.find({}, (err, result) => {
-    res.send(result)
-  })
-})
+
 
 
 module.exports = UserHandler
