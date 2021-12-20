@@ -6,9 +6,11 @@ const Schedule = require('../models/Schedule')
 const User = require('../models/User')
 const authorizeAdmin = require('../config/authorizeAdmin')
 const { getSlug } = require('../helpers')
+const cors = require("cors")
 
 const USERNAME = "kjr"
 const PASSWORD = "Kjr2021!!!"
+
 
 AdminHandler.get('/test', (req, res) => {
   User.find({}).limit(1).exec((err, result) => {
@@ -27,7 +29,7 @@ AdminHandler.post('/login', (req, res) => {
 })
 
 AdminHandler.get('/schedules', authorizeAdmin , (req, res) => {
-  Schedule.find().sort({'datetime': -1}).exec((err, result) => {
+  Schedule.find().sort({'datetime': -1}).limit(10).exec((err, result) => {
     res.send(succesHandler(result))
   })
 })
@@ -54,14 +56,13 @@ AdminHandler.get('/:slug/user', authorizeAdmin, (req, res) => {
   })
 })
 
-AdminHandler.get('/info', authorizeAdmin , async (req, res) => {
-  const schedules_active = await Schedule.where({datetime: {$gte: new Date()}}).count()
-  const schedules = await Schedule.count()
-  const males = await User.where({gender: {$eq: 'Ikhwan'}}).count()
-  const females = await User.where({gender: {$eq: 'Akhwat'}}).count()
+AdminHandler.get('/:slug/info', authorizeAdmin , async (req, res) => {
+  const schedule = await Schedule.findOne({slug: req.params.slug}).exec()
+  const males = await User.where({gender: {$eq: 'Ikhwan'}}).where({schedule_id: req.params.slug}).count()
+  const females = await User.where({gender: {$eq: 'Akhwat'}}).where({schedule_id: req.params.slug}).count()
 
-  res.send(succesHandler({males, females, schedules_active, schedules}))
+  res.send(succesHandler({males, females, schedule}))
 })
-
+AdminHandler.use(cors())
 
 module.exports = AdminHandler

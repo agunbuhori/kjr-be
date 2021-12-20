@@ -9,6 +9,7 @@ const QRCode = require('qrcode')
 const mailer = require('../config/mailer')
 const authorize = require('../config/authorize')
 const { succesHandler, errorHandler } = require('./handler')
+const ScheduleModel = require('../models/Schedule')
 
 UserHandler.use(cors(corsOptions))
 
@@ -19,10 +20,20 @@ UserHandler.post('/register', async (req, res) => {
     const newUser = new User({ ...req.body, code: makeid(5), name: toTitleCase(req.body.name) })
     const newUserSave = await newUser.save()
 
+    const dec1 = req.body.gender === 'Ikhwan' ? 'male_quota' : 'female_quota'
+    await ScheduleModel.findOneAndUpdate({slug: req.body.schedule_id}, {
+      $inc: {[dec1]: -1}
+    }).exec()
+
     if (newUserSave && req.body.name_2 && req.body.age_2 && req.body.gender_2) {
       const { name_2, age_2, gender_2 } = req.body
       const otherUser = new User({ ...req.body, code: makeid(5), name: toTitleCase(name_2), age: age_2, gender: gender_2 })
       const otherUserSave = await otherUser.save()
+
+      const dec2 = req.body.gender_2 === 'Ikhwan' ? 'male_quota' : 'female_quota'
+      await ScheduleModel.findOneAndUpdate({slug: req.body.schedule_id}, {
+        $inc: {[dec2]: -1}
+      }).exec()
 
       res.send(succesHandler({ ...newUserSave.toObject(), other: otherUserSave.toObject() }))
     }

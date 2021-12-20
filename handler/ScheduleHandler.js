@@ -12,7 +12,7 @@ const corsMiddleware = cors(corsOptions)
 
 ScheduleHandler.use(corsMiddleware)
 
-ScheduleHandler.get('/list', authorize, (req, res) => {
+ScheduleHandler.get('/list', (req, res) => {
   ScheduleModel.find({}, [], { sort: { datetime: 1 } }, (err, result) => {
     if (err) res.send(errorHandler(err))
     res.send(succesHandler(result))
