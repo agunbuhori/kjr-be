@@ -19,9 +19,8 @@ ScheduleHandler.get('/list', (req, res) => {
   })
 })
 
-ScheduleHandler.get('/channel/:slug', authorize, (req, res) => {
+ScheduleHandler.get('/channel/:slug', (req, res) => {
   ScheduleModel.findOne({slug: req.params.slug}, async (err, result) => {
-    await UserModel.updateMany({}, {present: 'none'}).exec();
     let males = await UserModel.find({schedule_id: result.slug, gender: 'Ikhwan'}).count()
     let males_present = await UserModel.find({schedule_id: result.slug, gender: 'Ikhwan', present: {$ne: null}}).count()
     let females = await UserModel.find({schedule_id: result.slug, gender: 'Akhwat'}).count()
