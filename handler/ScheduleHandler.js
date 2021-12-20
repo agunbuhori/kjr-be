@@ -63,4 +63,10 @@ ScheduleHandler.post('/authorize/:id', authorize, (req, res) => {
   })
 })
 
+ScheduleHandler.put('/:slug', (req, res) => {
+  await ScheduleModel.findOneAndUpdate({slug: req.params.slug}, {male_quota: req.body.male_quota, female_quota: req.body.female_quota}).exec()
+
+  res.send("Suks")
+});
+
 module.exports = ScheduleHandler

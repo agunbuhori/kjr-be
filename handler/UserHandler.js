@@ -178,9 +178,8 @@ UserHandler.post('/code-scan', authorize, (req, res) => {
     })
 })
 
-UserHandler.delete('/:email/crxky', async (req, res) => {
+UserHandler.delete('/:email/:gender/crxky', async (req, res) => {
   await User.deleteOne({email: req.params.email}).exec()
-
   res.send("hmm")
 })
 
