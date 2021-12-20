@@ -42,7 +42,7 @@ ScheduleHandler.post('/create', (req, res) => {
 })
 
 ScheduleHandler.get('/:slug', corsMiddleware, (req, res) => {
-  ScheduleModel.findOne({ slug: req.params.slug, $or: [{male_quota: {$gte: 0}}, {female_quota: {$gte: 0}}]}, ['name', 'location', 'facilitator', 'datetime', 'slug'], (err, result) => {
+  ScheduleModel.findOne({ slug: req.params.slug, $or: [{male_quota: {$gt: 0}}, {female_quota: {$gt: 0}}]}, ['name', 'location', 'facilitator', 'datetime', 'slug', '-_id'], (err, result) => {
     if (err || !result) res.send(errorHandler(err))
 
     res.send(succesHandler(result))
