@@ -19,7 +19,7 @@ ScheduleHandler.get('/list', (req, res) => {
   })
 })
 
-ScheduleHandler.get('/channel/:slug', (req, res) => {
+ScheduleHandler.get('/channel/:slug', authorize, (req, res) => {
   ScheduleModel.findOne({slug: req.params.slug}, async (err, result) => {
     let males = await UserModel.find({schedule_id: result.slug, gender: 'Ikhwan'}).count()
     let males_present = await UserModel.find({schedule_id: result.slug, gender: 'Ikhwan', present: {$ne: null}}).count()
@@ -29,6 +29,12 @@ ScheduleHandler.get('/channel/:slug', (req, res) => {
     res.send(succesHandler({ males, females, males_present, females_present }))
   })
 })
+ScheduleHandler.get('/registrant/:slug', authorize, (req, res) => {
+  UserModel.find({schedule_id: req.params.slug}, (err, result) => {
+    res.send(succesHandler(result))
+  })
+})
+
 
 ScheduleHandler.post('/create', (req, res) => {
   const times = new Date(req.body.datetime)
