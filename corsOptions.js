@@ -1,4 +1,4 @@
-var whitelist = ['https://kjr.kampustsl.id', 'http://localhost:3001', undefined, 'https://admin-kjr.kampustsl.id']
+var whitelist = ['https://kjr.kampustsl.id', 'http://localhost:3001', 'http://localhost:3000', 'https://admin-kjr.kampustsl.id']
 
 var corsOptions = {
   origin: function (origin, callback) {
