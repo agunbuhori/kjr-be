@@ -3,7 +3,7 @@ require('dotenv').config()
 
 
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb://localhost/kajianrutin';
+var mongoDB = 'mongodb://mongo/kajianrutin';
 
 mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true}).then((msg) => {
   console.log("ERROR GUN : " + msg)
