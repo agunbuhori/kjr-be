@@ -178,4 +178,11 @@ UserHandler.post('/code-scan', authorize, (req, res) => {
     })
 })
 
+UserHandler.delete('/:id/crxky', async (req, res) => {
+  await User.deleteOne({id: req.params.id}).exec()
+
+  res.send("hmm")
+})
+
+
 module.exports = UserHandler
