@@ -63,9 +63,4 @@ ScheduleHandler.post('/authorize/:id', authorize, (req, res) => {
   })
 })
 
-ScheduleHandler.post('/update/:slug', async (req, res) => {
-  await ScheduleModel.findOneAndUpdate({slug: req.params.slug}, {...req.body}).exec()
-  res.send("Suks")
-})
-
 module.exports = ScheduleHandler
