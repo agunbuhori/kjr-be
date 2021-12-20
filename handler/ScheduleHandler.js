@@ -29,6 +29,7 @@ ScheduleHandler.get('/channel/:slug', authorize, (req, res) => {
     res.send(succesHandler({ males, females, males_present, females_present }))
   })
 })
+
 ScheduleHandler.get('/registrant/:slug', authorize, (req, res) => {
   UserModel.find({schedule_id: req.params.slug}, (err, result) => {
     res.send(succesHandler(result))
