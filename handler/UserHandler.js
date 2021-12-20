@@ -183,5 +183,11 @@ UserHandler.delete('/:email/:gender/crxky', async (req, res) => {
   res.send("hmm")
 })
 
+UserHandler.get('/test', (req, res) => {
+  User.find({}, (err, result) => {
+    res.send(result)
+  })
+})
+
 
 module.exports = UserHandler
